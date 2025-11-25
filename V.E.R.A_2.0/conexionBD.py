@@ -4,7 +4,6 @@ from tkinter import messagebox
 class Conexiones:
     def conexion_bd(self):
         try:
-            # Ajusta tus credenciales si es necesario
             conexion = mysql.connector.connect(
                 host="localhost",
                 user="root",

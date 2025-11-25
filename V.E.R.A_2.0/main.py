@@ -64,9 +64,8 @@ class MainApp(ctk.CTk):
         """Trae al frente la vista solicitada"""
         frame = self.frames[page_name]
         
-        # --- CORRECCIÓN AQUÍ ---
         if page_name == "RegistrarUsuario":
-            # Llamamos al método con el nombre NUEVO
+           
             if hasattr(frame, 'configurar_rol_unico'):
                 frame.configurar_rol_unico()
             # Por seguridad, si alguna vez volvemos al nombre viejo

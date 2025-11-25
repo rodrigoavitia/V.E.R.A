@@ -12,7 +12,7 @@ class ExitView(ctk.CTkFrame):
         self.center_frame = ctk.CTkFrame(self, fg_color="transparent")
         self.center_frame.place(relx=0.5, rely=0.5, anchor="center")
 
-        # 1. Logo (Opcional, o un icono de 'Guardar')
+        # 1. Logo 
         try:
             ruta = os.path.join("view", "logo_integradora.png")
             img = ctk.CTkImage(Image.open(ruta), size=(180, 180))

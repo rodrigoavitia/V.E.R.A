@@ -87,3 +87,62 @@ class Consultas_reportes:
         except Exception as e:
             print(f"Error obteniendo detalle: {e}")
             return None
+    @staticmethod
+    def buscar_reportes(termino="", rol="Todos", fecha_ini="", fecha_fin=""):
+        try:
+            mi_conexion = Conexiones()
+            conexion, cursor = mi_conexion.conexion_bd()
+            
+            if conexion and cursor:
+                # --- CONSULTA MEJORADA ---
+                sql = """
+                SELECT 
+                    i.fecha,
+                    CONCAT(u.nombre, ' ', u.apellido_paterno) as nombre_completo,
+                    u.tipo as rol_usuario,
+                    u.id as matricula_usuario, -- ID del usuario
+                    v.placa,
+                    'A-01' as espacio, 
+                    i.hora as entrada,
+                    ADDTIME(i.hora, '04:00:00') as salida,
+                    i.tipo as reporte_tipo,
+                    i.id as id_reporte 
+                FROM imagenes i
+                JOIN vehiculos v ON i.id_vehiculo = v.id
+                JOIN usuarios u ON v.id_usuario = u.id
+                WHERE (
+                    v.placa LIKE %s OR          -- Buscar por Placa
+                    u.nombre LIKE %s OR         -- Buscar por Nombre
+                    u.apellido_paterno LIKE %s OR -- Buscar por Apellido
+                    CAST(u.id AS CHAR) LIKE %s OR -- NUEVO: Buscar por Matrícula Usuario (ID)
+                    v.marca LIKE %s OR          -- NUEVO: Buscar por Marca
+                    v.modelo LIKE %s            -- NUEVO: Buscar por Modelo
+                )
+                """
+                
+                # Ahora enviamos el término 6 VECES (una por cada condición OR)
+                t = f"%{termino}%"
+                params = [t, t, t, t, t, t]
+
+                if rol != "Todos" and rol != "Tipo de usuario":
+                    sql += " AND u.tipo = %s"
+                    params.append(rol)
+
+                if fecha_ini and fecha_fin:
+                    sql += " AND i.fecha BETWEEN %s AND %s"
+                    params.append(fecha_ini)
+                    params.append(fecha_fin)
+                elif fecha_ini:
+                    sql += " AND i.fecha >= %s"
+                    params.append(fecha_ini)
+
+                sql += " ORDER BY i.fecha DESC, i.hora DESC LIMIT 50"
+                
+                cursor.execute(sql, tuple(params))
+                resultados = cursor.fetchall()
+                cursor.close(); conexion.close()
+                return resultados
+            return []
+        except Exception as e:
+            print(f"Error buscando reportes: {e}")
+            return []

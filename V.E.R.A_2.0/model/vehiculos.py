@@ -59,3 +59,25 @@ class Consultas_vehiculos:
             else:
                 messagebox.showerror("Error BD", f"No se pudo registrar vehículo: {e}")
             return False
+        
+
+
+    @staticmethod
+    def buscar_usuarios_like(termino):
+        """Busca usuarios que coincidan con el término (para autocompletado)"""
+        try:
+            mi_conexion = Conexiones()
+            conexion, cursor = mi_conexion.conexion_bd()
+            if conexion and cursor:
+                sql = """
+                SELECT id, nombre, apellido_paterno, apellido_materno, tipo 
+                FROM usuarios 
+                WHERE nombre LIKE %s OR apellido_paterno LIKE %s 
+                LIMIT 5
+                """
+                param = f"%{termino}%"
+                cursor.execute(sql, (param, param))
+                resultados = cursor.fetchall()
+                cursor.close(); conexion.close()
+                return resultados
+        except: return []

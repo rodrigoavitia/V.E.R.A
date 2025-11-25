@@ -9,7 +9,6 @@ class SplashView(ctk.CTkFrame):
         
         self.configure(fg_color="white") # Fondo blanco limpio
 
-        # --- CONTENEDOR CENTRADO ---
         self.center_frame = ctk.CTkFrame(self, fg_color="transparent")
         self.center_frame.place(relx=0.5, rely=0.5, anchor="center")
 
@@ -42,7 +41,6 @@ class SplashView(ctk.CTkFrame):
     def iniciar_carga(self):
         """Simula la carga del sistema"""
         if self.progreso_actual < 1.0:
-            # --- CAMBIO 1: Incremento más pequeño (antes 0.015) ---
             self.progreso_actual += 0.007  
             self.progress_bar.set(self.progreso_actual)
             

@@ -39,3 +39,25 @@ class Consulta_usuarios:
         except Exception as e:
             messagebox.showerror("Error de BD", f"No se pudo guardar el registro: {e}")
             return False
+        
+    @staticmethod
+    def login(email, password):
+        """Busca un administrador por correo y contraseña. Retorna sus datos si existe."""
+        try:
+            mi_conexion = Conexiones()
+            conexion, cursor = mi_conexion.conexion_bd()
+            
+            if conexion and cursor:
+                # Buscamos en la tabla ADMIN
+                # Verificamos correo, contraseña y que el estado sea 1 (Activo)
+                sql = "SELECT nombre, rol FROM admin WHERE mail = %s AND password = %s AND estado = 1"
+                cursor.execute(sql, (email, password))
+                resultado = cursor.fetchone() # Devuelve una tupla (nombre, rol) o None
+                
+                cursor.close()
+                conexion.close()
+                return resultado
+                
+        except Exception as e:
+            print(f"Error en login: {e}")
+            return None

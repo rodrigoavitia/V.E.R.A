@@ -40,9 +40,8 @@ class MonitoreoView(ctk.CTkFrame):
         self.content.columnconfigure(0, weight=3) 
         self.content.columnconfigure(1, weight=1) 
 
-        # ==========================================
+        
         # PANEL IZQUIERDO: VIDEO FEED
-        # ==========================================
         self.video_panel = ctk.CTkFrame(self.content, fg_color="white", corner_radius=14, border_color="#E5E7EB", border_width=1)
         self.video_panel.grid(row=0, column=0, sticky="nsew", padx=(0, 20), pady=10)
 
@@ -62,15 +61,12 @@ class MonitoreoView(ctk.CTkFrame):
             ruta_img = os.path.join("view", "camara_demo.jpg")
             pil_img = Image.open(ruta_img)
             
-            # Ajustamos la imagen para que sea vea grande (Ej: 800x450 px)
-            # Usamos CTkImage para alta calidad
             cam_img = ctk.CTkImage(light_image=pil_img, dark_image=pil_img, size=(800, 450))
             
-            # Usamos un Label para mostrar la imagen
+            
             self.video_display = ctk.CTkLabel(self.feed_container, text="", image=cam_img)
             self.video_display.place(relx=0.5, rely=0.5, anchor="center") # Centrada
             
-            # IMPORTANTE: Usamos el video_display como padre de los overlays
             parent_widget = self.video_display 
             
         except Exception as e:
@@ -78,7 +74,6 @@ class MonitoreoView(ctk.CTkFrame):
             ctk.CTkLabel(self.feed_container, text="Sin señal de video", text_color="gray").place(relx=0.5, rely=0.5, anchor="center")
             parent_widget = self.feed_container
 
-        # --- OVERLAYS (Superpuestos en la imagen) ---
         
         # 1. Hora (Fondo oscuro sólido)
         overlay_time = ctk.CTkFrame(parent_widget, fg_color="#1F2937", corner_radius=4) 
@@ -98,9 +93,7 @@ class MonitoreoView(ctk.CTkFrame):
         ctk.CTkLabel(scanning_tag, text="Escaneando...", text_color="#155DFC", font=("Arial", 12, "bold")).pack(padx=15, pady=5)
 
 
-        # ==========================================
         # PANEL DERECHO: SIDEBAR
-        # ==========================================
         self.sidebar = ctk.CTkFrame(self.content, fg_color="white", corner_radius=14, border_color="#E5E7EB", border_width=1)
         self.sidebar.grid(row=0, column=1, sticky="nsew", pady=10)
 
