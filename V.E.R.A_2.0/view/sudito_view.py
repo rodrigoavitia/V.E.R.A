@@ -29,16 +29,15 @@ class SuditoView(ctk.CTkFrame):
         self.grid_cards.pack(fill="both", expand=True, padx=40, pady=20)
         self.grid_cards.columnconfigure((0,1), weight=1)
 
-        # --- TARJETA 1: VEHÍCULOS (Fila 0, Col 0) ---
+        # --- TARJETA 1: VEHÍCULOS 
         self.add_card(0, 0, "Agregar Vehículo", "Registra un nuevo vehículo", "#0092B8", "#CEFAFE", "🚙",
                       comando=lambda: self.controller.show_frame("RegistrarVehiculo"))
 
-        # --- TARJETA 2: REPORTES (Fila 0, Col 1) ---
+        # --- TARJETA 2: REPORTES 
         self.add_card(0, 1, "Ver Reportes", "Consulta y genera reportes", "#E17100", "#FEF3C6", "📄",
                       comando=lambda: self.controller.show_frame("ReportesView"))
 
-        # --- TARJETA 3: USUARIOS (Fila 1, Col 0) - NUEVA ---
-        # Nota: Usamos fila 1 para que baje a la siguiente línea
+        # --- TARJETA 3: USUARIOS 
         self.add_card(1, 0, "Gestión de Usuarios", "Registra nuevos usuarios", "#7C3AED", "#EDE9FE", "👥",
                       comando=lambda: self.controller.show_frame("RegistrarUsuario"))
 

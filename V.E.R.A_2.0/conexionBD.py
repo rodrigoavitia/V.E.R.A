@@ -1,27 +1,20 @@
 import mysql.connector
 from tkinter import messagebox
-from view import interface
 
 class Conexiones:
-    @staticmethod
-    def conexion_bd():
+    def conexion_bd(self):
         try:
-            # Intentamos conectar
+            # Ajusta tus credenciales si es necesario
             conexion = mysql.connector.connect(
-                host='localhost',
-                user='root',
-                password='',
-                database='bd_estacionamiento'
+                host="localhost",
+                user="root",
+                password="",
+                database="bd_estacionamiento"
             )
-            
-            return conexion 
+            cursor = conexion.cursor()
+            return conexion, cursor
             
         except Exception as e:
-            # Si falla, mostramos el error y devolvemos None
-            print(f"❌ Error en conectionBD: {e}") # Para verlo en la terminal
-            messagebox.showerror(
-                title="ERROR de conexión", 
-                message=f"Fallo al conectar con la base de datos: {e}",
-                icon="error"
-            )            
-            return None
+            # Usamos messagebox aquí solo para reportar el error crítico
+            messagebox.showerror("Error de Conexión", f"No se pudo conectar a la BD: {e}")
+            return None, None

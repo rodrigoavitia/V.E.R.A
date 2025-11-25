@@ -27,11 +27,11 @@ class SudoteView(ctk.CTkFrame):
         self.grid_cards.pack(fill="both", expand=True, padx=40, pady=20)
         self.grid_cards.columnconfigure((0,1), weight=1)
 
-        # --- AQUÍ CONECTAMOS LA PANTALLA ADDVEHICLEVIEW ---
+        
         self.add_card(0, 0, "Agregar Vehículo", "Registra un nuevo vehículo", "#0092B8", "#CEFAFE", "🚙", 
                       comando=lambda: self.controller.show_frame("RegistrarVehiculo")) 
 
-        # Las otras tarjetas tienen comandos dummy (print) por ahora
+        
         self.add_card(0, 1, "Ver Reportes", "Consulta y genera reportes", "#E17100", "#FEF3C6", "📄", 
                       comando=lambda: self.controller.show_frame("ReportesView"))
         
@@ -41,7 +41,7 @@ class SudoteView(ctk.CTkFrame):
         self.add_card(1, 1, "Monitoreo de Cámaras", "Visualiza seguridad en tiempo real", "#10B981", "#D1FAE5", "📹", 
                       comando=lambda: self.controller.show_frame("MonitoreoView"))
 
-    # --- NOTA EL NUEVO ARGUMENTO 'comando' AL FINAL ---
+    
     def add_card(self, r, c, title, desc, color, bg, icon, comando):
         card = ctk.CTkFrame(self.grid_cards, fg_color="white", corner_radius=15, border_width=1, border_color="#E2E8F0")
         card.grid(row=r, column=c, padx=15, pady=15, sticky="nsew")
@@ -53,7 +53,7 @@ class SudoteView(ctk.CTkFrame):
         ctk.CTkLabel(card, text=title, font=("Arial", 18, "bold"), text_color="black").pack(anchor="w", padx=20)
         ctk.CTkLabel(card, text=desc, font=("Arial", 13), text_color="gray").pack(anchor="w", padx=20, pady=5)
         
-        # Asignamos el comando al botón
+        
         ctk.CTkButton(card, text="Seleccionar ➔", fg_color="transparent", text_color=color, anchor="w", font=("Arial", 14, "bold"), command=comando).pack(fill="x", padx=20, pady=20)
 
     def logout(self):
