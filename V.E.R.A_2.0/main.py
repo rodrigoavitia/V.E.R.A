@@ -1,6 +1,6 @@
 import customtkinter as ctk
 
-# --- IMPORTACIÓN DE TODAS LAS VISTAS ---
+# Importar TODAS las Vistas (Modelos/Controladores)
 from view.login_view import LoginView
 from view.sudote_view import SudoteView
 from view.sudito_view import SuditoView
@@ -19,36 +19,22 @@ class MainApp(ctk.CTk):
         super().__init__()
         
         self.title("Sistema V.E.R.A. | Control de Acceso")
-        self.after(0, lambda: self.state('zoomed'))
-        
-        # Protocolo de cierre
+        self.after(0, lambda: self.state('zoomed')) # Maximizar
         self.protocol("WM_DELETE_WINDOW", self.confirmar_cierre)
         
-        self.geometry("1100x700")
-        self.minsize(900, 650)
-        self.configure(fg_color="#F3F4F6")
-        
         self.vista_retorno = "LoginView" 
-
+        
         self.container = ctk.CTkFrame(self, fg_color="#F3F4F6")
         self.container.pack(side="top", fill="both", expand=True)
-        
         self.container.grid_rowconfigure(0, weight=1)
         self.container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
 
-        # Lista de todas las pantallas
+        # Lista de todas las pantallas a inicializar
         lista_vistas = (
-            SplashView,
-            ExitView,
-            LoginView, 
-            SudoteView, 
-            SuditoView, 
-            RegistrarVehiculo, 
-            RegistrarUsuario, 
-            ReportesView, 
-            MonitoreoView
+            SplashView, ExitView, LoginView, SudoteView, SuditoView, 
+            RegistrarVehiculo, RegistrarUsuario, ReportesView, MonitoreoView
         )
 
         for F in lista_vistas:
@@ -57,32 +43,38 @@ class MainApp(ctk.CTk):
             self.frames[page_name] = frame
             frame.grid(row=0, column=0, sticky="nsew")
 
-        # Inicia con Splash
-        self.show_frame("SplashView")
+        self.show_frame("SplashView") # Arrancamos con el Splash
 
     def show_frame(self, page_name):
-        """Trae al frente la vista solicitada"""
+        """Trae al frente la vista solicitada y ejecuta hooks de inicialización."""
         frame = self.frames[page_name]
         
+        # Hooks de Inicialización: Se ejecutan justo antes de mostrar la pantalla
         if page_name == "RegistrarUsuario":
-           
-            if hasattr(frame, 'configurar_rol_unico'):
-                frame.configurar_rol_unico()
-            # Por seguridad, si alguna vez volvemos al nombre viejo
-            elif hasattr(frame, 'configurar_roles'):
+            # Llamamos al método que configura las opciones de rol
+            if hasattr(frame, 'configurar_roles'):
                 frame.configurar_roles()
-            
+            elif hasattr(frame, 'configurar_rol_unico'):
+                frame.configurar_rol_unico()
+        
+        # Si es el monitoreo, reiniciamos el bucle de video
+        if page_name == "MonitoreoView" and hasattr(frame, 'start_monitoring'):
+            frame.start_monitoring()
+
         frame.tkraise()
 
-    # Lógica de cierre con pantalla de carga
     def confirmar_cierre(self):
-        from tkinter import messagebox # Import local para evitar conflictos circulares si los hubiera
-        respuesta = messagebox.askyesno("Salir del Sistema", "¿Estás seguro de que deseas salir?\nSe guardarán los cambios pendientes.")
+        from tkinter import messagebox
+        respuesta = messagebox.askyesno("Salir del Sistema", "¿Estás seguro de que deseas salir?")
         
         if respuesta:
+            # Aseguramos que la cámara se libere si está activa
+            if "MonitoreoView" in self.frames and self.frames["MonitoreoView"].running:
+                self.frames["MonitoreoView"].camera.release()
+            
             frame_salida = self.frames["ExitView"]
             frame_salida.tkraise()
-            frame_salida.iniciar_salida()
+            frame_salida.iniciar_salida() # Inicia el guardado y apagado
 
 if __name__ == "__main__":
     app = MainApp()

@@ -2,12 +2,13 @@ import customtkinter as ctk
 from tkinter import messagebox
 import re
 from model.usuarios import Consulta_usuarios 
+# REMOVIDA: from controller.funcion_admin import hash_password 
+# REMOVIDA: import getpass (No es necesaria aquí)
 
 class RegistrarUsuario(ctk.CTkFrame):
     def __init__(self, master, controller):
         super().__init__(master)
         self.controller = controller
-        
         self.configure(fg_color="#F1F5F9")
 
         # --- TARJETA PRINCIPAL ---
@@ -54,6 +55,7 @@ class RegistrarUsuario(ctk.CTkFrame):
         self.entry_correo.pack(fill="x")
 
         ctk.CTkLabel(self.frame_credenciales, text="Contraseña *", font=("Arial", 12, "bold"), text_color="#334155").pack(anchor="w", pady=(10, 5))
+        
         self.entry_pass = ctk.CTkEntry(self.frame_credenciales, height=40, border_color="#D1D5DB", fg_color="white", text_color="black", show="•")
         self.entry_pass.pack(fill="x")
         self.entry_pass.bind("<KeyRelease>", self.actualizar_fuerza)
@@ -109,7 +111,7 @@ class RegistrarUsuario(ctk.CTkFrame):
         estado = self.switch_estado.get()
         
         email_final = ""
-        pass_final = ""
+        pass_final = "" 
 
         # Validaciones
         if rol == "Seleccionar..." or not nombre or not ape_pat:
@@ -118,14 +120,20 @@ class RegistrarUsuario(ctk.CTkFrame):
 
         if "Sudito" in rol:
             email_final = self.entry_correo.get()
-            pass_final = self.entry_pass.get()
+            pass_clara = self.entry_pass.get() 
             confirm = self.entry_confirm.get()
-            if not email_final or not pass_final:
+            
+            if not email_final or not pass_clara:
                 messagebox.showerror("Error", "El administrador requiere Correo y Contraseña.")
                 return
-            if pass_final != confirm:
+            
+            if pass_clara != confirm:
                 messagebox.showerror("Error", "Las contraseñas no coinciden.")
                 return
+            
+            # --- CAMBIO CLAVE: Usar texto plano para la demo ---
+            pass_final = pass_clara
+            # --- FIN DEL CAMBIO CLAVE ---
         
         # Registro en BD
         exito = Consulta_usuarios.registrar_persona(
@@ -134,20 +142,15 @@ class RegistrarUsuario(ctk.CTkFrame):
 
         if exito:
             msg_estado = "Activo" if estado else "Inactivo"
-            
-            # Mostrar mensaje de éxito
             messagebox.showinfo("Registro Exitoso", f"Usuario '{nombre}' registrado correctamente ({msg_estado}).")
             
-            self.limpiar() # Limpia el formulario actual
+            self.limpiar()
             
-            # --- LÓGICA DE REDIRECCIÓN INTELIGENTE ---
-            # Si NO es un Sudito (es decir, es un usuario normal), probablemente quiera registrar su coche
+            # Redirección
             if "Sudito" not in rol:
                 respuesta = messagebox.askyesno("Continuar", "¿Desea registrar un vehículo para este usuario ahora?")
                 if respuesta:
                     self.controller.show_frame("RegistrarVehiculo")
-            
-            # Si ES un Sudito, nos quedamos aquí para registrar otro o salir manualmente
 
     def limpiar(self):
         self.entry_nombre.delete(0, 'end')

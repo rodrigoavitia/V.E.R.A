@@ -4,6 +4,7 @@ from PIL import Image
 import os
 # IMPORTANTE: Importar el modelo
 from model.usuarios import Consulta_usuarios 
+# REMOVIDA: from controller.funcion_admin import hash_password 
 
 class LoginView(ctk.CTkFrame):
     def __init__(self, master, controller):
@@ -11,9 +12,6 @@ class LoginView(ctk.CTkFrame):
         self.controller = controller
         self.contrasena_es_visible = False
         self.configure(fg_color="#F3F4F6") 
-
-        # ... (Todo tu código visual del __init__ se queda IGUAL) ...
-        # Solo nos enfocamos en cambiar la lógica de abajo:
 
         # --- TARJETA CENTRAL BLANCA ---
         self.card = ctk.CTkFrame(self, fg_color="white", width=450, height=620, corner_radius=20)
@@ -51,38 +49,13 @@ class LoginView(ctk.CTkFrame):
 
         ctk.CTkLabel(self.card, text="Contraseña", font=("Arial", 14, "bold"), text_color="#334155", anchor="w").pack(fill="x", padx=45, pady=(0, 5))
         
-        self.pass_frame = ctk.CTkFrame(
-            self.card,
-            height=45,
-            fg_color="white",
-            border_color="#94A3B8",
-            border_width=2,
-            corner_radius=8
-        )
+        self.pass_frame = ctk.CTkFrame(self.card, height=45, fg_color="white", border_color="#94A3B8", border_width=2, corner_radius=8)
         self.pass_frame.pack(fill="x", padx=45, pady=(0, 5))
         
-        self.entry_pass = ctk.CTkEntry(
-            self.pass_frame,
-            show="•",
-            height=40,
-            border_width=0,
-            fg_color="transparent",
-            text_color="black",
-            font=("Arial", 14),
-            placeholder_text="••••••••"
-        )
+        self.entry_pass = ctk.CTkEntry(self.pass_frame, show="•", height=40, border_width=0, fg_color="transparent", text_color="black", font=("Arial", 14), placeholder_text="••••••••")
         self.entry_pass.pack(side="left", fill="both", expand=True, padx=(10, 5), pady=2)
         
-        self.btn_eye = ctk.CTkButton(
-            self.pass_frame,
-            text="👁",
-            width=35,
-            fg_color="transparent",
-            text_color="#64748B",
-            hover_color="#F1F5F9",
-            font=("Arial", 18),
-            command=self.toggle_pass
-        )
+        self.btn_eye = ctk.CTkButton(self.pass_frame, text="👁", width=35, fg_color="transparent", text_color="#64748B", hover_color="#F1F5F9", font=("Arial", 18), command=self.toggle_pass)
         self.btn_eye.pack(side="right", padx=(0, 5), pady=2)
 
         # 4. BOTÓN DE ACCIÓN
@@ -109,28 +82,26 @@ class LoginView(ctk.CTkFrame):
             self.contrasena_es_visible = True
 
     def validar(self):
-        """Valida credenciales contra la Base de Datos"""
+        """Valida credenciales contra la Base de Datos usando texto plano."""
         u = self.entry_user.get()
-        p = self.entry_pass.get()
-
-        # 1. BACKDOOR SUPER ADMIN (Siempre entra directo)
-        if u == "sudote@vera.security" and p == "admin123":
+        p_cleartext = self.entry_pass.get() # Contraseña en texto plano
+        
+        # --- 1. VALIDACIÓN DEL SUPER ADMIN (TEXTO PLANO) ---
+        if u == "sudote@vera.security" and p_cleartext == "admin123": 
             print("Acceso SUDOTE (Master) concedido.")
             self.controller.vista_retorno = "SudoteView"
             self.controller.show_frame("SudoteView")
             self.limpiar()
             return
 
-        # 2. CONSULTAR BASE DE DATOS (Para Suditos y otros admins)
-        datos_usuario = Consulta_usuarios.login(u, p)
+        # 2. CONSULTAR BASE DE DATOS (Para Suditos)
+        # Enviamos el texto plano directamente al modelo para el SELECT
+        datos_usuario = Consulta_usuarios.login(u, p_cleartext) 
 
         if datos_usuario:
-            # datos_usuario es una tupla: (nombre, rol)
             nombre, rol = datos_usuario
             print(f"Acceso concedido a: {nombre} ({rol})")
 
-            # Si es admin (cualquier nivel registrado en tabla admin), entra a SuditoView
-            # (A menos que quieras diferenciar roles dentro de la tabla admin)
             self.controller.vista_retorno = "SuditoView"
             self.controller.show_frame("SuditoView")
             self.limpiar()
